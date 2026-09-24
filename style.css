@@ -1,0 +1,20 @@
+body{
+    margin: 0;
+    background-color: black;
+    color: aliceblue;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+
+}
+
+canvas{
+    background-color: black;
+    border: 3px solid #fb6f92;
+    margin-top: 16px;
+
+}
+h1{
+    color: #fb6f92;
+    font-size: 32px;
+    margin-top: 16px;
+}
