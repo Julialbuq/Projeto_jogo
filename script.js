@@ -14,7 +14,7 @@ let lasttime = 0; //marca a posição do último frame
 function update(dt) {
     player.x += player.vx * dt;
     player.y += player.vy * dt;
-    //se ele bateu na parede esquerda o direita ele vai inerter o sinal do vx
+    //se ele bateu na parede esquerda o direita ele vai inerter o sinal do 
     if (player.x < 0 || player.x + player.w > canvas.width) {
         player.vx *= -1;
     }
