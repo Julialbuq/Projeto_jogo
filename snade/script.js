@@ -9,6 +9,7 @@ const player = {
     x: 40, y: 160, w: 32, h: 32, vx: 120, vy: 120
 };
 
+
 let lasttime = 0; //marca a posição do último frame
 
 function update(dt) {
