@@ -1,0 +1,9 @@
+--TESTES DO JOGO--
+pessoa 1:
+1-"Achei muito rapido!"
+2-"gostei muito!"
+3-"porque ela fica piscando?"
+pessoa 2:
+1-"wow que bonitinho"
+2-"é bem rapido né"
+3-"gostei"

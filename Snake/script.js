@@ -16,7 +16,15 @@ let state = STATES.READY;
 let snake = [];
 let dir = { x: 1, y: 0 };
 let nextDir = { x: 1, y: 0 };
+
 let food = { x: 10, y: 10 };
+
+// --- COMIDA DOURADA ---
+let goldenFood = null; // Guardará a posição { x, y } quando ativa
+let goldenTimer = 0;   // Contador para controlar a duração
+const GOLDEN_DURATION = 35; // Quantidade de ticks que a comida dourada permanece (aprox. 6.5s)
+const GOLDEN_CHANCE = 0.2;   // 20% de chance de aparecer ao gerar comida normal
+
 let score = 0;
 let best = Number(localStorage.getItem("snake-best") || 0);
 let acc = 0;
@@ -36,6 +44,8 @@ function reset() {
     nextDir = { x: 1, y: 0 };
     score = 0;
     scoreEl.textContent = score;
+    goldenFood = null;
+    goldenTimer = 0;
     spawnFood();
     state = STATES.READY;
     stateEl.textContent = state;
@@ -47,7 +57,31 @@ function spawnFood() {
             x: Math.floor(Math.random() * COLS),
             y: Math.floor(Math.random() * ROWS),
         };
-    } while (snake.some((s) => s.x === food.x && s.y === food.y));
+    } while (
+        snake.some((s) => s.x === food.x && s.y === food.y) ||
+        (goldenFood && goldenFood.x === food.x && goldenFood.y === food.y)
+    );
+
+    // Tenta gerar a comida dourada se ela não estiver ativa
+    if (!goldenFood && Math.random() < GOLDEN_CHANCE) {
+        spawnGoldenFood();
+    }
+}
+
+function spawnGoldenFood() {
+    let pos;
+    do {
+        pos = {
+            x: Math.floor(Math.random() * COLS),
+            y: Math.floor(Math.random() * ROWS),
+        };
+    } while (
+        snake.some((s) => s.x === pos.x && s.y === pos.y) ||
+        (food.x === pos.x && food.y === pos.y)
+    );
+
+    goldenFood = pos;
+    goldenTimer = GOLDEN_DURATION;
 }
 
 function setDirection(x, y) {
@@ -57,11 +91,10 @@ function setDirection(x, y) {
 
 window.addEventListener("keydown", (e) => {
     const key = e.key.toLowerCase();
-    if (["arrowup",
-        "arrowdown",
-        "arrowleft",
-        "arrowright",
-        " "].includes(key) || key === " ") {
+    if (
+        ["arrowup", "arrowdown", "arrowleft", "arrowright", " "].includes(key) ||
+        key === " "
+    ) {
         e.preventDefault();
     }
     if (key === "arrowup" || key === "w") setDirection(0, -1);
@@ -78,12 +111,10 @@ window.addEventListener("keydown", (e) => {
         stateEl.textContent = state;
     }
     if (key === "r") reset();
-    if (state === STATES.READY &&
-        ["arrowup",
-            "arrowdown",
-            "arrowleft",
-            "arrowright",
-            "w", "a", "s", "d"].includes(key)) {
+    if (
+        state === STATES.READY &&
+        ["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"].includes(key)
+    ) {
         state = STATES.PLAYING;
         stateEl.textContent = state;
     }
@@ -105,11 +136,28 @@ function tick() {
         }
         return;
     }
+
     snake.unshift(head);
+
+    // Controle do tempo da comida dourada
+    if (goldenFood) {
+        goldenTimer--;
+        if (goldenTimer <= 0) {
+            goldenFood = null; // Desaparece se o tempo acabar
+        }
+    }
+
+    // Checa colisão com comida normal
     if (head.x === food.x && head.y === food.y) {
         score += 10;
         scoreEl.textContent = score;
         spawnFood();
+    } 
+    // Checa colisão com comida dourada
+    else if (goldenFood && head.x === goldenFood.x && head.y === goldenFood.y) {
+        score += 20; // Dobro de pontos
+        scoreEl.textContent = score;
+        goldenFood = null;
     } else {
         snake.pop();
     }
@@ -124,8 +172,18 @@ function draw() {
     ctx.fillStyle = "#022c22";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawCell(food.x, food.y, "#f87171");
-    snake.forEach((s, i) => drawCell(s.x, s.y, i === 0 ? "#4ade80" : "#22c55e"));
+    // Desenha comida normal
+    drawCell(food.x, food.y, "#f12222ff");
+
+    // Desenha comida dourada (pisca nos últimos 10 ticks para avisar que vai sumir)
+    if (goldenFood) {
+        if (goldenTimer > 10 || Math.floor(goldenTimer / 2) % 2 === 0) {
+            drawCell(goldenFood.x, goldenFood.y, "#ffd700");
+        }
+    }
+
+    // Desenha a cobra
+    snake.forEach((s, i) => drawCell(s.x, s.y, i === 0 ? "#e33f5dff" : "#bc4749"));
 
     if (state !== STATES.PLAYING) {
         ctx.fillStyle = "rgba(15,23,42,0.65)";
@@ -136,9 +194,13 @@ function draw() {
         ctx.fillText(state, canvas.width / 2, canvas.height / 2);
 
         ctx.font = "16px Segoe UI";
-        ctx.fillText(state === STATES.OVER ?
-            "Pressione R para reiniciar" :
-            "Pressione ESPAÇO para jogar", canvas.width / 2, canvas.height / 2 + 32);
+        ctx.fillText(
+            state === STATES.OVER
+                ? "Pressione R para reiniciar"
+                : "Pressione ESPAÇO para jogar",
+            canvas.width / 2,
+            canvas.height / 2 + 32
+        );
     }
 }
 
