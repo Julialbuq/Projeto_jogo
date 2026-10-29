@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f49595;
+    color: #db3a3a;
+}
+h1 {
+    color: #db3a3a;
+}
+canvas{
+    border: 4px solid #db3a3a;
+    background: #f49595;
+}
