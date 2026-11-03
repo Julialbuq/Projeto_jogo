@@ -29,6 +29,7 @@ function buildBricks() {
                 h: 20,
                 color: colors[row],
                 alive: true,
+                hp: 2
             });
         }
     }
@@ -126,13 +127,22 @@ function update(dt) {
 
     ////Passo 7 — Colisão com tijolo
     bricks.forEach((b) => {
-        if (b.alive && collideBrick(b)) {
+    if (b.alive && collideBrick(b)) {
+
+        b.hp -= 1;
+
+        if (b.hp === 1) {
+            b.color = "#a1a1aa";
+        }
+
+        if (b.hp <= 0) {
             b.alive = false;
-            ball.vy *= -1;
             score += 10;
         }
-    });
 
+        ball.vy *= -1;
+    }
+});
     if (bricks.every((b) => !b.alive)) {
         buildBricks();
         resetBall();
