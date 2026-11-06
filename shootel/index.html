@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shootel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Shootel Defender</h1>
+        <p> Use setas para esquerda ou direita ou A e D para mover. Esapaço para atirar e P para pausar </p>
+    </header>
+    <div class = "hud">
+        <span> Pontos : <strong id ="score">0</strong></span>
+        <span> Vidas : <strong id ="lives">3</strong></span>
+        <span> Ondas : <strong id ="wave">1</strong></span>
+        
+    </div>
+    <canvas id="game" width="480" height="640"></canvas>
+    <script src="game.js"></script>
+</body>
+</html>
